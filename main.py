@@ -148,5 +148,9 @@ if __name__ == "__main__":
     build_thread.daemon = True
     build_thread.start()
     
+    # Wait a bit for build to complete
+    time.sleep(5)
+    
     # Start the server
-    uvicorn.run(app, host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))
+    port = int(os.environ.get("PORT", 8000))
+    uvicorn.run(app, host="0.0.0.0", port=port)
