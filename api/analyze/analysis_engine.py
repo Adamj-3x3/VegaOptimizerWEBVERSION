@@ -41,18 +41,21 @@ def get_options_data(ticker, expiration, underlying_price):
         return [], []
 
     def process_options(options_data):
-        if not options_data or len(options_data) == 0:
+        if options_data is None or len(options_data) == 0:
             return []
         
         valid_options = []
-        for _, option in options_data.iterrows():
+        for index in range(len(options_data)):
             try:
+                option = options_data.iloc[index]
                 # Check if required fields exist and are valid
-                if (pd.isna(option.get('impliedVolatility')) or 
-                    pd.isna(option.get('bid')) or 
-                    pd.isna(option.get('ask')) or
-                    option.get('impliedVolatility', 0) <= 0.01 or
-                    option.get('bid', 0) <= 0):
+                implied_vol = option.get('impliedVolatility')
+                bid = option.get('bid', 0)
+                ask = option.get('ask', 0)
+                
+                if (implied_vol is None or implied_vol <= 0.01 or
+                    bid is None or bid <= 0 or
+                    ask is None or ask <= 0):
                     continue
                 
                 # Check volume or open interest
@@ -62,8 +65,6 @@ def get_options_data(ticker, expiration, underlying_price):
                     continue
                 
                 # Check bid-ask spread
-                bid = option.get('bid', 0)
-                ask = option.get('ask', 0)
                 if ask <= 0 or (ask - bid) / ask >= 0.6:
                     continue
                 
@@ -71,11 +72,11 @@ def get_options_data(ticker, expiration, underlying_price):
                     'strike': option.get('strike', 0),
                     'bid': bid,
                     'ask': ask,
-                    'impliedVolatility': option.get('impliedVolatility', 0),
+                    'impliedVolatility': implied_vol,
                     'volume': volume,
                     'openInterest': open_interest
                 })
-            except:
+            except Exception as e:
                 continue
         
         return valid_options
