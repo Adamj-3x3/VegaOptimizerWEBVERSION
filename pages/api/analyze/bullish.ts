@@ -21,7 +21,7 @@ export default async function handler(
       ? `https://${process.env.VERCEL_URL}` 
       : 'http://localhost:3000';
     
-    const response = await fetch(`${baseUrl}/api/analyze_bullish`, {
+    const response = await fetch(`${baseUrl}/api/analyze/bullish`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
