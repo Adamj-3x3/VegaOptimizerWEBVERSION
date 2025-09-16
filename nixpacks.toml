@@ -13,4 +13,4 @@ cmds = [
 ]
 
 [start]
-cmd = "npm run start"
+cmd = "python main.py"
