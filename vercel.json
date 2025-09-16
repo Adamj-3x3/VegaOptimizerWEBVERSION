@@ -1,12 +1,4 @@
 {
-  "functions": {
-    "api/analyze_bullish.py": {
-      "runtime": "python3.9"
-    },
-    "api/analyze_bearish.py": {
-      "runtime": "python3.9"
-    }
-  },
   "builds": [
     {
       "src": "api/analyze_bullish.py",
