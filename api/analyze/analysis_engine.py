@@ -1,5 +1,4 @@
 import yfinance as yf
-import pandas as pd
 import json
 import math
 from datetime import datetime
@@ -45,33 +44,44 @@ def get_options_data(ticker, expiration, underlying_price):
         if options_data is None or len(options_data) == 0:
             return []
         
-        # Use pandas methods properly
-        df = options_data.copy()
-        df.dropna(subset=['impliedVolatility', 'bid', 'ask'], inplace=True)
-        if df.empty:
-            return []
-        
-        # Filter valid options
-        mask = (((df['volume'] > 0) | (df['openInterest'] > 0)) & 
-                (df['impliedVolatility'] > 0.01) & 
-                (df['bid'] > 0) & 
-                ((df['ask'] - df['bid']) / df['ask'] < 0.6))
-        
-        filtered_df = df[mask].copy()
-        if filtered_df.empty:
-            return []
-        
-        # Convert to list of dictionaries
         valid_options = []
-        for index, row in filtered_df.iterrows():
-            valid_options.append({
-                'strike': row['strike'],
-                'bid': row['bid'],
-                'ask': row['ask'],
-                'impliedVolatility': row['impliedVolatility'],
-                'volume': row['volume'],
-                'openInterest': row['openInterest']
-            })
+        
+        # Convert DataFrame to list of dictionaries for processing
+        for index in range(len(options_data)):
+            try:
+                row = options_data.iloc[index]
+                
+                # Check for valid data
+                implied_vol = row.get('impliedVolatility')
+                bid = row.get('bid', 0)
+                ask = row.get('ask', 0)
+                volume = row.get('volume', 0)
+                open_interest = row.get('openInterest', 0)
+                
+                # Skip if missing critical data
+                if (implied_vol is None or implied_vol <= 0.01 or
+                    bid is None or bid <= 0 or
+                    ask is None or ask <= 0):
+                    continue
+                
+                # Check volume or open interest
+                if volume <= 0 and open_interest <= 0:
+                    continue
+                
+                # Check bid-ask spread
+                if ask <= 0 or (ask - bid) / ask >= 0.6:
+                    continue
+                
+                valid_options.append({
+                    'strike': row.get('strike', 0),
+                    'bid': bid,
+                    'ask': ask,
+                    'impliedVolatility': implied_vol,
+                    'volume': volume,
+                    'openInterest': open_interest
+                })
+            except Exception as e:
+                continue
         
         return valid_options
 
