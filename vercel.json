@@ -1,0 +1,30 @@
+{
+  "functions": {
+    "api/analyze_bullish.py": {
+      "runtime": "python3.9"
+    },
+    "api/analyze_bearish.py": {
+      "runtime": "python3.9"
+    }
+  },
+  "builds": [
+    {
+      "src": "api/analyze_bullish.py",
+      "use": "@vercel/python"
+    },
+    {
+      "src": "api/analyze_bearish.py",
+      "use": "@vercel/python"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/analyze_bullish",
+      "dest": "/api/analyze_bullish.py"
+    },
+    {
+      "src": "/api/analyze_bearish",
+      "dest": "/api/analyze_bearish.py"
+    }
+  ]
+}
