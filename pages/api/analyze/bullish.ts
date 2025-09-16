@@ -16,12 +16,10 @@ export default async function handler(
       return res.status(400).json({ error: 'Missing required parameters' });
     }
 
-    // Call the Python serverless function directly
-    const baseUrl = process.env.VERCEL_URL 
-      ? `https://${process.env.VERCEL_URL}` 
-      : 'http://localhost:3000';
+    // Call the FastAPI backend
+    const backendUrl = process.env.RAILWAY_URL || 'http://localhost:8000';
     
-    const response = await fetch(`${baseUrl}/api/analyze/bullish`, {
+    const response = await fetch(`${backendUrl}/api/analyze/bullish`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
